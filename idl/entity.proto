@@ -1,0 +1,13 @@
+syntax = "proto3";
+package entity;
+option go_package = "entity";
+
+message BaseResponse {
+  int32 status_code = 1;
+  string status_msg = 2;
+}
+
+message TokenPair {
+  string access_token = 1;
+  string refresh_token = 2;
+}

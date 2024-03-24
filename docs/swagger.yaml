@@ -1,0 +1,16 @@
+info:
+  contact: {}
+paths:
+  /api/user/current:
+    get:
+      responses: {}
+  /api/user/login:
+    post:
+      responses: {}
+  /api/user/logout:
+    post:
+      responses: {}
+  /api/user/register:
+    post:
+      responses: {}
+swagger: "2.0"

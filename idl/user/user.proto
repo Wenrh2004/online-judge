@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "online-judge/user";
+
+import "api.proto";
+import "entity.proto";
+
+message RegisterReq {
+  string username = 1[json_name = "username"];
+  string password = 2[(api.vd)="len($) >= 8 && len($) <= 20", json_name = "password"];
+  string check_password = 3[(api.vd)="len($) >= 8 && len($) <= 20", json_name = "check_password"];
+}
+
+message RegisterResp {
+  string id = 1;
+}
+
+message LoginReq {
+  string username = 1[json_name = "username"];
+  string password = 2[(api.vd)="len($) >= 8 && len($) <= 20", json_name = "password"];
+}
+
+message LoginResp {
+  entity.TokenPair data = 1;
+}
+
+message CurrentUserReq {
+  string access_token = 1[(api.header) = "Authorization", json_name = "access_token"];
+}
+
+message CurrentUserResp {
+  string id = 1;
+  string username = 2;
+  int32 role = 3;
+  string avatar = 4;
+  string email = 5;
+  string phone = 6;
+}
+
+message LogoutReq {
+  string access_token = 1[(api.header) = "Authorization", json_name = "access_token"];
+}
+
+message LogoutResp {
+  string user_id = 1[json_name = "user_id"];
+}
+
+service UserHandler {
+  rpc Register(RegisterReq) returns(RegisterResp) {
+    option (api.post) = "/api/user/register";
+  }
+
+  rpc Login(LoginReq) returns(LoginResp) {
+    option (api.post) = "/api/user/login";
+  }
+
+  rpc CurrentUser(CurrentUserReq) returns(CurrentUserResp) {
+    option (api.get) = "/api/user/current";
+  }
+
+  rpc Logout(LogoutReq) returns(LogoutResp) {
+    option (api.post) = "/api/user/logout";
+  }
+}
