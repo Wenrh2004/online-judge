@@ -18,7 +18,7 @@ type UserClaims struct {
 
 // CreateToken 创建访问令牌和刷新令牌
 func CreateToken(userID string) (*entity.TokenPair, error) {
-	accessClaims := generateClaims(userID, time.Hour*2)
+	accessClaims := generateClaims(userID, time.Second*60)
 	accessToken, err := signToken(accessClaims)
 	if err != nil {
 		return nil, err
@@ -60,15 +60,24 @@ func ParseTokenString(tokenString string) (*UserClaims, error) {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+	claims, ok := token.Claims.(*UserClaims)
+	if !ok {
+		return nil, errors.New("token is not valid")
+	}
+
+	if claims.Exp < time.Now().Unix() {
+		return nil, errors.New("token is expired")
+	}
+
+	if token.Valid {
 		return claims, nil
 	}
 
 	return nil, errors.New("token is not valid")
 }
 
-// refreshATokenPair 续签访问令牌
-func refreshATokenPair(refreshTokenString string) (*entity.TokenPair, error) {
+// RefreshATokenPair 续签访问令牌
+func RefreshATokenPair(refreshTokenString string) (*entity.TokenPair, error) {
 	refreshClaims, err := ParseTokenString(refreshTokenString)
 	if err != nil {
 		return nil, err
